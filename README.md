@@ -8,6 +8,7 @@
 1.  Приложение состоит из nginx, php-fpm и единственной страницы index.php:<br>
 
 ```
+<?php
 echo "Hello world!";
 ```
 
