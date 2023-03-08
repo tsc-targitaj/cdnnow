@@ -2,7 +2,7 @@
 
 echo on
 
-#Variables
+# Variables
 PROJECT_NAME="cdnnow"
 #PROJECT_ROOT="/home/`whoami`/Projects/$PROJECT_NAME"
 PROJECT_ROOT="./"
@@ -22,7 +22,7 @@ STAGE_ENTRY=""
 PROD_ENTRY=""
 NOW=`date +"%Y-%m-%d_%H-%M-%S_%Z"`
 
-#Functions
+# Functions
 function prepare_app
 {
     echo
