@@ -109,7 +109,6 @@ echo "Project code here $PROJECT_ROOT/$PROJECT_CODE"
 echo "Project autotest here $PROJECT_ROOT/$PROJECT_AUTOTEST"
 
 # Preare
-
 prepare_app || error
 
 # Build stage
@@ -126,8 +125,7 @@ saveimage
 # Deploy to prod
 
 # Start application here
-
-start_console $START_PROD_YAML
+start_console $START_PROD_YAML || error
 
 # Cleanup stage
 cleanup
