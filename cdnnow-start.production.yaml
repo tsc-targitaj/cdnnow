@@ -1,7 +1,7 @@
 version: "2.3"
 services:
   nginx:
-    image: compose_nginx
+    image: cdnnow_nginx
     ports:
       - "80:80"
     depends_on:
@@ -10,7 +10,7 @@ services:
     environment:
       - ENV=production
   php:
-    image: compose_php
+    image: cdnnow_php
     healthcheck:
       test: ["CMD", "php-fpm", "-t"]
       interval: 3s

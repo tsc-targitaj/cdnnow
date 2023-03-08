@@ -17,6 +17,8 @@ p	{text-ident:20px;
 echo "Hello there!!";
 echo "</br>";
 echo "cdnnow test";
+echo "</br>";
+echo "This is PHP!!!";
 ?>
 </h1>
 </body>
