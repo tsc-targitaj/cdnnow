@@ -4,7 +4,7 @@
 <style type="text/css">
 <!--
 h1	{text-align:center;
-	font-family:Arial, Helvetica, Sans-	Serif;
+	font-family:Arial, Helvetica, Sans-Serif;
 	}
 p	{text-ident:20px;
 	}
