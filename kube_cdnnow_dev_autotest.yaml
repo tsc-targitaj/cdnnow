@@ -1,0 +1,11 @@
+version: "2.3"
+services:
+  test:
+    image: cdnnow_test:dev
+    depends_on:
+      - php
+      - nginx
+  php:
+    image: cdnnow_php:dev
+  nginx:
+    image: cdnnow_nginx:dev

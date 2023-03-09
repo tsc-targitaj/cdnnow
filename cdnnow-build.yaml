@@ -1,16 +1,18 @@
 version: "2.3"
 services:
   nginx:
-    build: ./nginx
+    build:
+      context: ./nginx
     ports:
       - "80:80"
     depends_on:
       php:
         condition: service_healthy
     environment:
-      - ENV=development
+      - ENV=dev
   php:
-    build: ./php
+    build:
+      context: ./php
     healthcheck:
       test: ["CMD", "php-fpm", "-t"]
       interval: 3s

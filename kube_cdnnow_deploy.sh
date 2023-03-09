@@ -55,6 +55,9 @@ function prepare_env
 {
     echo
     echo -e "\033[37;1;42m --- Preparing environment. \033[0m"
+    echo -e "\033[37;1;42m --- WARNING. Applyng "minikube docker-env". \033[0m"
+    echo
+    read -p " --- Press enter to continue"
     eval $(minikube docker-env) || error
     echo
     echo " --- done"
@@ -68,6 +71,13 @@ function prepare_app
     rsync -avvP $PROJECT_ROOT/templates/etc/nginx/conf.d/*conf $PROJECT_ROOT/nginx/
     rsync -avvP $PROJECT_ROOT/app/ $PROJECT_ROOT/nginx/www/
     rsync -avvP $PROJECT_ROOT/app/*php $PROJECT_ROOT/php/www/
+}
+
+function minikube_build
+{
+    echo
+    echo -e "\033[37;1;42m --- Starting building $PROJECT_NAME $1 $2. \033[0m"
+    minikube image build $1 -t "$PROJECT_NAME"_$1:$2
 }
 
 
@@ -84,6 +94,7 @@ function autotest
     echo
     echo -e "\033[37;1;42m --- Starting autotest stage. \033[0m"
     docker-compose -f $1 -f $2 up --abort-on-container-exit --exit-code-from $3
+    echo -e "\033[37;1;42m --- AUTOTEST SUCCESS. \033[0m"
 }
 
 function saveimage
@@ -148,21 +159,28 @@ echo "Project code here $PROJECT_ROOT/$PROJECT_CODE"
 echo "Project autotest here $PROJECT_ROOT/$PROJECT_AUTOTEST"
 
 # Preare
-#prepare_app || error
-prepare_kube
-start_kube
-prepare_env
+prepare_kube || error 
+start_kube || error
+prepare_env || error
+prepare_app || error
 
-# Build stage
-#build $BUILD_YAML || error
+# Build dev
+minikube_build nginx dev || error
+minikube_build php dev || error
+minikube_build test dev || error
 
 # Autotest stage
 #autotest $BUILD_YAML $AUTOTEST_YAML $PROJECT_AUTOTEST || error
+docker-compose -f kube_cdnnow_dev_autotest.yaml up --abort-on-container-exit --exit-code-from test || error
 
 # Saving images to repository
 #saveimage
 
 # Deploy to stage
+
+# Build prod
+minikube_build nginx prod || error
+minikube_build php prod || error
 
 # Deploy to prod
 
@@ -170,7 +188,7 @@ prepare_env
 #start_console $START_PROD_YAML || error
 
 # Cleanup stage
-cleanup
+#cleanup
 
 # Finishin
-#finish 0
+finish 0
