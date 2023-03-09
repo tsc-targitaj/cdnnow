@@ -26,7 +26,7 @@ NOW=`date +"%Y-%m-%d_%H-%M-%S_%Z"`
 function prepare_kube
 {
     echo
-    echo -e "\033[37;1;42m --- Check/install kubectl. Need sudo for install. \033[0m"
+    echo -e "\033[37;1;42m --- Check/install kubectl utility. Need sudo for install. \033[0m"
     kubectl help 2>&1 >/dev/null || \
     (curl -LO https://storage.googleapis.com/kubernetes-release/release/`curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt`/bin/linux/amd64/kubectl \
     && chmod +x ./kubectl \
@@ -34,13 +34,21 @@ function prepare_kube
     ; rm kubectl)
     kubectl help 2>&1 >/dev/null && (echo; echo " --- kubectl ready")
     echo
-    echo -e "\033[37;1;42m --- Check/install minikube. Need sudo for install. \033[0m"
+    echo -e "\033[37;1;42m --- Check/install minikube utility. Need sudo for install. \033[0m"
     minikube help 2>&1 >/dev/null || \
     (curl -Lo minikube https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64 \
     && chmod +x minikube \
     && sudo install minikube /usr/local/bin/ \
     ; rm minikube)
     minikube help 2>&1 >/dev/null && (echo; echo " --- minikube ready")
+}
+
+function start_kube
+{
+    echo
+    echo -e "\033[37;1;42m --- Check/start minikube processes. \033[0m"
+    minikube status | grep -e host | grep -e Running 2>&1 >/dev/null || minikube start
+    minikube status | grep -e host | grep -e Running 2>&1 >/dev/null && (echo; echo " --- minikube running")
 }
 
 function prepare_app
@@ -132,6 +140,7 @@ echo "Project autotest here $PROJECT_ROOT/$PROJECT_AUTOTEST"
 # Preare
 #prepare_app || error
 prepare_kube
+start_kube
 
 # Build stage
 #build $BUILD_YAML || error
