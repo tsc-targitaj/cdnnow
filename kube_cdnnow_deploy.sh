@@ -13,10 +13,10 @@ PROJECT_TEMPLATES="templates"
 PROJECT_AUTOTEST="test"
 BUILD_TAG=""
 BUILD_YAML="cdnnow-build.yaml"
-AUTOTEST_YAML="cdnnow-autotest.yaml"
+AUTOTEST_YAML="kube_cdnnow_dev_autotest.yaml"
 DEPLOY_TEST_YAML=""
 DEPLOY_PROD_YAML=""
-START_PROD_YAML="cdnnow-start.production.yaml"
+START_PROD_YAML=""
 IMAGES_REPO=""
 STAGE_ENTRY=""
 PROD_ENTRY=""
@@ -55,9 +55,15 @@ function prepare_env
 {
     echo
     echo -e "\033[37;1;42m --- Preparing environment. \033[0m"
-    echo -e "\033[37;1;42m --- WARNING. Applyng "minikube docker-env". \033[0m"
+    echo " --- Creating namespace $PROJECT_NAME"
+    kubectl create namespace $PROJECT_NAME || error
+    echo " --- Seting namespace $PROJECT_NAME as current"
+    kubectl config set-context --current --namespace=$PROJECT_NAME || error
+    echo " --- Done."
     echo
-    read -p " --- Press enter to continue"
+    echo -e "\033[37;1;42m --- WARNING. Applying "minikube docker-env". \033[0m"
+    echo
+    read -p " --- Press ENTER to confirm and continue"
     eval $(minikube docker-env) || error
     echo
     echo " --- done"
@@ -188,7 +194,7 @@ minikube_build php prod || error
 #start_console $START_PROD_YAML || error
 
 # Cleanup stage
-cleanup
+#cleanup
 
 # Finishin
 finish 0
