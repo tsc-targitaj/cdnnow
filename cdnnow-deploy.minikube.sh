@@ -23,6 +23,18 @@ PROD_ENTRY=""
 NOW=`date +"%Y-%m-%d_%H-%M-%S_%Z"`
 
 # Functions
+function prepare_kube
+{
+    echo
+    echo -e "\033[37;1;42m --- Check/install kubectl. Need sudo for install. \033[0m"
+    kubectl help 2>&1 >/dev/null || \
+    (curl -LO https://storage.googleapis.com/kubernetes-release/release/`curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt`/bin/linux/amd64/kubectl \
+    && chmod +x ./kubectl \
+    && sudo install kubectl /usr/local/bin/ \
+    ; rm kubectl) \
+    && echo " --- kubectl ready"
+}
+
 function prepare_app
 {
     echo
@@ -109,26 +121,27 @@ echo "Project code here $PROJECT_ROOT/$PROJECT_CODE"
 echo "Project autotest here $PROJECT_ROOT/$PROJECT_AUTOTEST"
 
 # Preare
-prepare_app || error
+#prepare_app || error
+prepare_kube
 
 # Build stage
-build $BUILD_YAML || error
+#build $BUILD_YAML || error
 
 # Autotest stage
-autotest $BUILD_YAML $AUTOTEST_YAML $PROJECT_AUTOTEST || error
+#autotest $BUILD_YAML $AUTOTEST_YAML $PROJECT_AUTOTEST || error
 
 # Saving images to repository
-saveimage
+#saveimage
 
 # Deploy to stage
 
 # Deploy to prod
 
 # Start application here
-start_console $START_PROD_YAML || error
+#start_console $START_PROD_YAML || error
 
 # Cleanup stage
 cleanup
 
 # Finishin
-finish 0
+#finish 0
