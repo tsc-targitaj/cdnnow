@@ -56,7 +56,7 @@ function prepare_env
     echo
     echo -e "\033[37;1;42m --- Preparing environment. \033[0m"
     echo " --- Creating namespace $PROJECT_NAME."
-    kubectl create namespace $PROJECT_NAME || error
+    kubectl get namespaces | grep $PROJECT_NAME || kubectl create namespace $PROJECT_NAME
     echo " --- Seting namespace $PROJECT_NAME as current."
     kubectl config set-context --current --namespace=$PROJECT_NAME || error
     echo " --- Done."
@@ -194,12 +194,13 @@ minikube_build nginx prod || error
 minikube_build php prod || error
 
 # Deploy to prod
+#kubectl apply -f ./kube/*prod
 
 # Start application here
 #start_console $START_PROD_YAML || error
 
 # Cleanup stage
-cleanup
+#cleanup
 
 # Finishin
 finish 0
