@@ -23,6 +23,12 @@ PROD_ENTRY=""
 NOW=`date +"%Y-%m-%d_%H-%M-%S_%Z"`
 
 # Functions
+function pause
+{
+    echo
+    read -p " --- Press ENTER to confirm and continue."
+}
+
 function prepare_kube
 {
     echo
@@ -62,8 +68,7 @@ function prepare_env
     echo " --- Done."
     echo
     echo -e "\033[37;1;42m --- WARNING. Applying "minikube docker-env". \033[0m"
-    echo
-    read -p " --- Press ENTER to confirm and continue."
+    pause
     eval $(minikube docker-env) || error
     echo
     echo " --- done"
@@ -189,9 +194,13 @@ docker-compose -f cdnnow-autotest-dev.yaml up --abort-on-container-exit --exit-c
 # Deploy to stage
 kubectl apply -f ./kube_dev/ || error
 
+pause
+
 # Build prod
 minikube_build nginx prod || error
 minikube_build php prod || error
+
+pause
 
 # Deploy to prod
 #kubectl apply -f ./kube/*prod
@@ -199,8 +208,10 @@ minikube_build php prod || error
 # Start application here
 #start_console $START_PROD_YAML || error
 
+#pause
+
 # Cleanup stage
-#cleanup
+cleanup
 
 # Finishin
 finish 0
