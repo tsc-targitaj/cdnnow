@@ -188,7 +188,7 @@ minikube_build php prod || error
 #start_console $START_PROD_YAML || error
 
 # Cleanup stage
-#cleanup
+cleanup
 
 # Finishin
 finish 0
