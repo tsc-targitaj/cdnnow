@@ -183,6 +183,7 @@ docker-compose -f kube_cdnnow_dev_autotest.yaml up --abort-on-container-exit --e
 #saveimage
 
 # Deploy to stage
+kubectl apply -f ./kube/*dev
 
 # Build prod
 minikube_build nginx prod || error
