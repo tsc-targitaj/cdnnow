@@ -55,15 +55,15 @@ function prepare_env
 {
     echo
     echo -e "\033[37;1;42m --- Preparing environment. \033[0m"
-    echo " --- Creating namespace $PROJECT_NAME"
+    echo " --- Creating namespace $PROJECT_NAME."
     kubectl create namespace $PROJECT_NAME || error
-    echo " --- Seting namespace $PROJECT_NAME as current"
+    echo " --- Seting namespace $PROJECT_NAME as current."
     kubectl config set-context --current --namespace=$PROJECT_NAME || error
     echo " --- Done."
     echo
     echo -e "\033[37;1;42m --- WARNING. Applying "minikube docker-env". \033[0m"
     echo
-    read -p " --- Press ENTER to confirm and continue"
+    read -p " --- Press ENTER to confirm and continue."
     eval $(minikube docker-env) || error
     echo
     echo " --- done"
@@ -114,10 +114,14 @@ function cleanup
     echo
     echo -e "\033[37;1;42m --- Starting cleanup stage. \033[0m"
     echo
-    echo " --- Removing containers"
+    echo " --- Removing deployments."
+    kubectl delete -n cdnnow deployment cdnnow-nginx-dev
+    kubectl delete -n cdnnow deployment cdnnow-php-dev
+    echo
+    echo " --- Removing containers."
     docker rm $(docker ps -a -q --filter="name=$PROJECT_NAME*") 2>/dev/null
     echo
-    echo " --- Removing images"
+    echo " --- Removing images."
     docker rmi $(docker images "$PROJECT_NAME*" -a -q) --force 2>/dev/null
     rm -rf $PROJECT_ROOT/nginx/www/*
     rm -rf $PROJECT_ROOT/nginx/*conf
@@ -138,8 +142,8 @@ function finish
 {
     # Exit with code
     echo
-    echo -e "\033[37;1;42m --- Finishing with code $1 \033[0m"
-    echo -e "\033[37;1;42m --- Bye \033[0m"
+    echo -e "\033[37;1;42m --- Finishing with code $1. \033[0m"
+    echo -e "\033[37;1;42m --- Bye. \033[0m"
     echo
     exit $1
 }
@@ -177,7 +181,7 @@ minikube_build test dev || error
 
 # Autotest stage
 #autotest $BUILD_YAML $AUTOTEST_YAML $PROJECT_AUTOTEST || error
-docker-compose -f kube_cdnnow_dev_autotest.yaml up --abort-on-container-exit --exit-code-from test || error
+docker-compose -f cdnnow-autotest-dev.yaml up --abort-on-container-exit --exit-code-from test || error
 
 # Saving images to repository
 #saveimage
@@ -195,7 +199,7 @@ minikube_build php prod || error
 #start_console $START_PROD_YAML || error
 
 # Cleanup stage
-#cleanup
+cleanup
 
 # Finishin
 finish 0
