@@ -46,8 +46,8 @@ function prepare_kube
 function start_kube
 {
     echo
-    echo -e "\033[37;1;42m --- Check/start minikube processes. \033[0m"
-    minikube status | grep -e host | grep -e Running 2>&1 >/dev/null || minikube start
+    echo -e "\033[37;1;42m --- Check/start minikube processes via docker. \033[0m"
+    minikube status | grep -e host | grep -e Running 2>&1 >/dev/null || minikube start --driver docker
     minikube status | grep -e host | grep -e Running 2>&1 >/dev/null && (echo; echo " --- minikube running")
 }
 
