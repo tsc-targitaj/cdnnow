@@ -51,6 +51,15 @@ function start_kube
     minikube status | grep -e host | grep -e Running 2>&1 >/dev/null && (echo; echo " --- minikube running")
 }
 
+function prepare_env
+{
+    echo
+    echo -e "\033[37;1;42m --- Preparing environment. \033[0m"
+    eval $(minikube docker-env) || error
+    echo
+    echo " --- done"
+}
+
 function prepare_app
 {
     echo
@@ -142,6 +151,7 @@ echo "Project autotest here $PROJECT_ROOT/$PROJECT_AUTOTEST"
 #prepare_app || error
 prepare_kube
 start_kube
+prepare_env
 
 # Build stage
 #build $BUILD_YAML || error
