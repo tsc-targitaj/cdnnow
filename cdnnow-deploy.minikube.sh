@@ -114,6 +114,7 @@ function finish
     echo
     echo -e "\033[37;1;42m --- Finishing with code $1 \033[0m"
     echo -e "\033[37;1;42m --- Bye \033[0m"
+    echo
     exit $1
 }
 
