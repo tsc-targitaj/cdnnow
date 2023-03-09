@@ -61,10 +61,10 @@ function cleanup
     echo -e "\033[37;1;42m --- Starting cleanup stage. \033[0m"
     echo
     echo " --- Removing containers"
-    docker rm $(docker ps -a -q --filter="name=$PROJECT_NAME*")
+    docker rm $(docker ps -a -q --filter="name=$PROJECT_NAME*") 2>/dev/null
     echo
     echo " --- Removing images"
-    docker rmi $(docker images "$PROJECT_NAME*" -a -q) --force
+    docker rmi $(docker images "$PROJECT_NAME*" -a -q) --force 2>/dev/null
     rm -rf $PROJECT_ROOT/nginx/www/*
     rm -rf $PROJECT_ROOT/nginx/*conf
     rm -rf $PROJECT_ROOT/php/www/*
@@ -100,6 +100,7 @@ function start_console
 # Start here
 clear
 echo -e "\033[37;1;42m --- Starting deploy script. \033[0m"
+echo
 echo "Now is $NOW"
 echo "Project name is $PROJECT_NAME"
 echo "Project root is $PROJECT_ROOT"
