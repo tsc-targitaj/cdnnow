@@ -60,18 +60,27 @@ function start_minikube
 function prepare_env
 {
     echo
-    echo -e "\033[37;1;42m --- Preparing environment. \033[0m"
-    echo " --- Creating namespace $PROJECT_NAME."
-    kubectl get namespaces | grep $PROJECT_NAME || kubectl create namespace $PROJECT_NAME
-    echo " --- Seting namespace $PROJECT_NAME as current."
-    kubectl config set-context --current --namespace=$PROJECT_NAME || error
-    echo " --- Done."
-    echo
     echo -e "\033[37;1;42m --- WARNING. Applying "minikube docker-env". \033[0m"
     pause
     eval $(minikube docker-env) || error
     echo
     echo " --- done"
+}
+
+function minikube_create_namespace
+{
+    echo
+    echo -e "\033[37;1;42m --- Preparing environment. \033[0m"
+    echo " --- Creating namespace "$PROJECT_NAME"-"$1"."
+    kubectl get namespaces | grep "$PROJECT_NAME"-"$1" || kubectl create namespace "$PROJECT_NAME"-"$1"
+    echo " --- Done."
+}
+
+function minikube_set_context
+{
+    echo " --- Seting namespace "$PROJECT_NAME"-"$1" as current."
+    kubectl config set-context --current --namespace="$PROJECT_NAME"-"$1" || error
+    echo " --- Done."
 }
 
 function prepare_app
@@ -119,7 +128,7 @@ function minicube_start_console
     # Start applications
     echo
     echo -e "\033[37;1;42m --- Starting applications in console mode. \033[0m"
-    minikube service cdnnow-nginx-$1-service -n $PROJECT_NAME
+    minikube service cdnnow-nginx-$1-service -n "$PROJECT_NAME"-"$1"
 }
 
 function saveimage
@@ -128,23 +137,27 @@ function saveimage
     echo -e "\033[37;1;42m --- Saving image to repo. \033[0m"
 }
 
-function cleanup
+function minikube_cleanup
 {
     echo
-    echo -e "\033[37;1;42m --- Starting cleanup stage. \033[0m"
+    echo -e "\033[37;1;42m --- Starting cleanup $1. \033[0m"
     pause
     echo
     echo " --- Removing deployments."
-    kubectl delete -n cdnnow deployment cdnnow-nginx-dev-deployment
-    kubectl delete -n cdnnow deployment cdnnow-php-dev-deployment
-    kubectl delete -n cdnnow service php
-    kubectl delete -n cdnnow service cdnnow-nginx-dev-service
+    kubectl delete -n "$PROJECT_NAME"-"$1" deployment cdnnow-nginx-$1-deployment
+    kubectl delete -n "$PROJECT_NAME"-"$1" deployment cdnnow-php-$1-deployment
+    kubectl delete -n "$PROJECT_NAME"-"$1" service php
+    kubectl delete -n "$PROJECT_NAME"-"$1" service cdnnow-nginx-$1-service
     echo
     echo " --- Removing containers."
     docker rm $(docker ps -a -q --filter="name=$PROJECT_NAME*") 2>/dev/null
     echo
     echo " --- Removing images."
     docker rmi $(docker images "$PROJECT_NAME*" -a -q) --force 2>/dev/null
+}
+
+function files_cleanup
+{
     rm -rf $PROJECT_ROOT/nginx/www/*
     rm -rf $PROJECT_ROOT/nginx/*conf
     rm -rf $PROJECT_ROOT/php/www/*
@@ -186,20 +199,24 @@ echo "Project autotest here $PROJECT_ROOT/$PROJECT_AUTOTEST"
 prepare_minikube || error 
 start_minikube || error
 prepare_env || error
+minikube_create_namespace dev || error
+minikube_create_namespace prod || error
 prepare_app || error
 
 # Build dev
+minikube_set_context dev || error
 minikube_build nginx dev || error
 minikube_build php dev || error
 minikube_build test dev || error
 
-# Autotest stage
+# Autotest
 docker-compose -f cdnnow-autotest-dev.yaml up --abort-on-container-exit --exit-code-from test || error
 
-# Deploy to stage
+# Deploy to dev
 minikube_deploy dev || error
 
 # Build prod
+minikube_set_context prod || error
 minikube_build nginx prod || error
 minikube_build php prod || error
 
@@ -210,7 +227,9 @@ minikube_deploy prod || error
 minicube_start_console prod
 
 # Cleanup stage
-cleanup
+minikube_cleanup dev
+minikube_cleanup prod
+files_cleanup
 
 # Finishin
 finish 0
