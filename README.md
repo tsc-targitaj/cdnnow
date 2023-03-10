@@ -34,7 +34,7 @@ echo "Hello world!";
 
 Обращаю внимание на необходимость произвести зачистку окружения в машине сборки образов в любом случае, вне зависимости от последующих результатов.
 
-Cкрипт cdnnow-deploy.compose.sh работает с использованием docker-compose.</br>
+Cкрипт <b>cdnnow-deploy.compose.sh</b> работает с использованием docker-compose.</br>
 Сервис доступен по адресу http://cdnnow.</br>
 </br>
-Скрипт kube_cdnnow_deploy.sh работает с использованием minicube.</br>
+Скрипт <b>cdnnow-deploy.minikube.sh</b> работает с использованием docker-compose и minicube.</br>
