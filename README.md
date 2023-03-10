@@ -38,3 +38,4 @@ Cкрипт <b>cdnnow-deploy.compose.sh</b> работает с использо
 Сервис доступен по адресу http://cdnnow.</br>
 </br>
 Скрипт <b>cdnnow-deploy.minikube.sh</b> работает с использованием docker-compose и minicube.</br>
+Откроется страница в браузере, там в строке надо ip адрес поменять на текст cdnnow. Нужно получить http://cdnnow:port
