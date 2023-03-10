@@ -91,6 +91,12 @@ function minikube_build
     minikube image build $1 -t "$PROJECT_NAME"_$1:$2
 }
 
+function minikube_deploy
+{
+    echo
+    echo -e "\033[37;1;42m --- Starting deploy $PROJECT_NAME $1. \033[0m"
+    kubectl apply -f ./kube_$1/ || error
+}
 
 function build
 {
@@ -118,10 +124,13 @@ function cleanup
 {
     echo
     echo -e "\033[37;1;42m --- Starting cleanup stage. \033[0m"
+    pause
     echo
     echo " --- Removing deployments."
     kubectl delete -n cdnnow deployment cdnnow-nginx-dev
     kubectl delete -n cdnnow deployment cdnnow-php-dev
+    kubectl delete -n cdnnow service php
+    kubectl delete -n cdnnow service cdnnow-nginx-dev
     echo
     echo " --- Removing containers."
     docker rm $(docker ps -a -q --filter="name=$PROJECT_NAME*") 2>/dev/null
@@ -192,23 +201,17 @@ docker-compose -f cdnnow-autotest-dev.yaml up --abort-on-container-exit --exit-c
 #saveimage
 
 # Deploy to stage
-kubectl apply -f ./kube_dev/ || error
-
-pause
+minikube_deploy dev || error
 
 # Build prod
 minikube_build nginx prod || error
 minikube_build php prod || error
 
-pause
-
 # Deploy to prod
-#kubectl apply -f ./kube/*prod
+#minikube_deploy prod || error
 
 # Start application here
 #start_console $START_PROD_YAML || error
-
-#pause
 
 # Cleanup stage
 cleanup
