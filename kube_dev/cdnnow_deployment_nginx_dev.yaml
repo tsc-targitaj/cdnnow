@@ -1,19 +1,22 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: cdnnow-nginx-dev
+  name: cdnnow-nginx-dev-deployment
+  labels:
+    app: cdnnow-nginx-dev-deployment
 spec:
   replicas: 2
   selector:
     matchLabels:
-      app: nginx
+      app: cdnnow-nginx-dev-pod
   template:
     metadata:
+      name: cdnnow-nginx-dev-pod
       labels:
-        app: nginx
+        app: cdnnow-nginx-dev-pod
     spec:
       containers:
-        - name: nginx
+        - name: cdnnow-nginx-dev-container
           image: cdnnow_nginx:dev
           ports:
             - containerPort: 80
