@@ -225,6 +225,7 @@ minikube_deploy prod || error
 
 # Start application here
 minicube_start_console prod
+pause
 
 # Cleanup stage
 minikube_cleanup dev
