@@ -2,8 +2,6 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: cdnnow-php-dev-deployment
-  labels:
-    app: cdnnow-php-dev-deployment
 spec:
   replicas: 2
   selector:

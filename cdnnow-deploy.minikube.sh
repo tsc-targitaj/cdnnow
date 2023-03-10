@@ -29,7 +29,7 @@ function pause
     read -p " --- Press ENTER to confirm and continue."
 }
 
-function prepare_kube
+function prepare_minikube
 {
     echo
     echo -e "\033[37;1;42m --- Check/install kubectl utility. Need sudo for install. \033[0m"
@@ -49,7 +49,7 @@ function prepare_kube
     minikube help 2>&1 >/dev/null && (echo; echo " --- minikube ready")
 }
 
-function start_kube
+function start_minikube
 {
     echo
     echo -e "\033[37;1;42m --- Check/start minikube processes via docker. \033[0m"
@@ -114,6 +114,14 @@ function autotest
     echo -e "\033[37;1;42m --- AUTOTEST SUCCESS. \033[0m"
 }
 
+function minicube_start_console
+{
+    # Start applications
+    echo
+    echo -e "\033[37;1;42m --- Starting applications in console mode. \033[0m"
+    minikube service cdnnow-nginx-$1-service -n $PROJECT_NAME
+}
+
 function saveimage
 {
     echo
@@ -127,10 +135,10 @@ function cleanup
     pause
     echo
     echo " --- Removing deployments."
-    kubectl delete -n cdnnow deployment cdnnow-nginx-dev
-    kubectl delete -n cdnnow deployment cdnnow-php-dev
+    kubectl delete -n cdnnow deployment cdnnow-nginx-dev-deployment
+    kubectl delete -n cdnnow deployment cdnnow-php-dev-deployment
     kubectl delete -n cdnnow service php
-    kubectl delete -n cdnnow service cdnnow-nginx-dev
+    kubectl delete -n cdnnow service cdnnow-nginx-dev-service
     echo
     echo " --- Removing containers."
     docker rm $(docker ps -a -q --filter="name=$PROJECT_NAME*") 2>/dev/null
@@ -162,14 +170,6 @@ function finish
     exit $1
 }
 
-function start_console
-{
-    # Start applications
-    echo
-    echo -e "\033[37;1;42m --- Starting applications in console mode. \033[0m"
-    docker-compose -f $1 up
-}
-
 # Start here
 clear
 echo -e "\033[37;1;42m --- Starting deploy script. \033[0m"
@@ -183,8 +183,8 @@ echo "Project code here $PROJECT_ROOT/$PROJECT_CODE"
 echo "Project autotest here $PROJECT_ROOT/$PROJECT_AUTOTEST"
 
 # Preare
-prepare_kube || error 
-start_kube || error
+prepare_minikube || error 
+start_minikube || error
 prepare_env || error
 prepare_app || error
 
@@ -194,11 +194,7 @@ minikube_build php dev || error
 minikube_build test dev || error
 
 # Autotest stage
-#autotest $BUILD_YAML $AUTOTEST_YAML $PROJECT_AUTOTEST || error
 docker-compose -f cdnnow-autotest-dev.yaml up --abort-on-container-exit --exit-code-from test || error
-
-# Saving images to repository
-#saveimage
 
 # Deploy to stage
 minikube_deploy dev || error
@@ -208,10 +204,10 @@ minikube_build nginx prod || error
 minikube_build php prod || error
 
 # Deploy to prod
-#minikube_deploy prod || error
+minikube_deploy prod || error
 
 # Start application here
-#start_console $START_PROD_YAML || error
+minicube_start_console prod
 
 # Cleanup stage
 cleanup
