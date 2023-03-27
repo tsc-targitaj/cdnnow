@@ -6,6 +6,8 @@ RUN apk add --no-cache --repository http://dl-cdn.alpinelinux.org/alpine/v3.11/m
 
 EXPOSE 80
 
+RUN rm /etc/nginx/conf.d/default.conf
+
 COPY *conf /etc/nginx/conf.d/
 
 COPY ./www/ /var/www/
